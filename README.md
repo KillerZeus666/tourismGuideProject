@@ -55,6 +55,6 @@ Las reglas principales del modelo son:
 - Katheryn Sofía Guasca  
 - Juan Luis Ardila
 - Sebastián Mendez
-- x x x x  
+- Nicolás Pedraza 
 
 ---
