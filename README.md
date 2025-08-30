@@ -29,7 +29,7 @@ Las reglas principales del modelo son:
 
 ### Diagrama del diseño
 
-![Diseño del problema](./diseno_problema.png)
+![Diseño del problema](./disenio.jpg)
 
 ---
 
