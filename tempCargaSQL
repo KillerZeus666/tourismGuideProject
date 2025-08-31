@@ -1,0 +1,9 @@
+CREATE TABLE TempCarga (
+    nombreGuia   VARCHAR(100),
+    genero       CHAR(1),
+    cedula       INT,
+    nombreCiudad VARCHAR(100),
+    nombrePais   VARCHAR(100),
+    fecha        DATE,
+    valorDia     INT
+);
