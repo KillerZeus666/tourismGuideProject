@@ -1,0 +1,4 @@
+nombreGuia,genero,cedula,nombreCiudad,nombrePais,fecha,valorDia
+Guia_1,F,10001,Ciudad_1,Pais_1,2025-06-01,120
+Guia_2,M,10002,Ciudad_3,Pais_2,2025-06-15,200
+Guia_3,F,10003,Ciudad_5,Pais_1,2025-07-05,180
