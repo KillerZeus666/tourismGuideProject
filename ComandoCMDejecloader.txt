@@ -1,0 +1,4 @@
+sqlldr 'USUARIO/CLAVE@//orion.javeriana.edu.co:1521/LAB' control="tempcarga.ctl" log="tempcarga.log"
+
+
+USUARIO y CLAVE cambiarlo por sus datos
