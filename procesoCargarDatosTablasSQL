@@ -1,0 +1,31 @@
+CREATE OR REPLACE PROCEDURE SP_CARGARDATOSTURISTICOS AS 
+BEGIN
+    -- Insertar guías
+  INSERT INTO Guia (nombre, genero, cedula)
+  SELECT DISTINCT t.nombreGuia, t.genero, t.cedula
+  FROM TempCarga t
+  WHERE NOT EXISTS (SELECT 1 FROM Guia g WHERE g.cedula = t.cedula);
+
+  -- Insertar ciudades
+  INSERT INTO Ciudad (nombreCiudad, nombrePais)
+  SELECT DISTINCT t.nombreCiudad, t.nombrePais
+  FROM TempCarga t
+  WHERE NOT EXISTS (SELECT 1 FROM Ciudad c WHERE c.nombreCiudad = t.nombreCiudad);
+
+  -- Insertar tiempos
+  INSERT INTO Tiempo (fecha, dia, mes, anio)
+  SELECT DISTINCT t.fecha,
+         EXTRACT(DAY FROM t.fecha),
+         EXTRACT(MONTH FROM t.fecha),
+         EXTRACT(YEAR FROM t.fecha)
+  FROM TempCarga t
+  WHERE NOT EXISTS (SELECT 1 FROM Tiempo ti WHERE ti.fecha = t.fecha);
+
+  -- Insertar hechos
+  INSERT INTO HechosGuiaCiudad (idGuia, idCiudad, idTiempo, valorDia)
+  SELECT g.idGuia, c.idCiudad, ti.idTiempo, t.valorDia
+  FROM TempCarga t
+  JOIN Guia g ON g.cedula = t.cedula
+  JOIN Ciudad c ON c.nombreCiudad = t.nombreCiudad
+  JOIN Tiempo ti ON ti.fecha = t.fecha;
+END SP_CARGARDATOSTURISTICOS;

@@ -28,7 +28,7 @@ CREATE TABLE HechosGuiaCiudad (
     idCiudad  INT,
     idTiempo  INT,
     valorDia  INT,
-    CONSTRAINT fk_guia FOREIGN KEY (idGuia) REFERENCES DimensionGuia(idGuia),
-    CONSTRAINT fk_ciudad FOREIGN KEY (idCiudad) REFERENCES DimensionCiudad(idCiudad),
-    CONSTRAINT fk_tiempo FOREIGN KEY (idTiempo) REFERENCES DimensionTiempo(idTiempo)
+    CONSTRAINT fk_guia FOREIGN KEY (idGuia) REFERENCES Guia(idGuia),
+    CONSTRAINT fk_ciudad FOREIGN KEY (idCiudad) REFERENCES Ciudad(idCiudad),
+    CONSTRAINT fk_tiempo FOREIGN KEY (idTiempo) REFERENCES Tiempo(idTiempo)
 );
