@@ -1,31 +1,76 @@
 CREATE OR REPLACE PROCEDURE SP_CARGARDATOSTURISTICOS AS 
 BEGIN
-    -- Insertar guías
-  INSERT INTO Guia (nombre, genero, cedula)
-  SELECT DISTINCT t.nombreGuia, t.genero, t.cedula
-  FROM TempCarga t
-  WHERE NOT EXISTS (SELECT 1 FROM Guia g WHERE g.cedula = t.cedula);
+  /* ----------------------------
+     DIMENSION: Guia (único por cedula)
+     ---------------------------- */
+  MERGE INTO Guia g
+  USING (
+    SELECT cedula,
+           MIN(nombreGuia) AS nombreGuia,
+           MIN(genero)     AS genero
+    FROM TempCarga
+    GROUP BY cedula
+  ) src
+  ON (g.cedula = src.cedula)
+  WHEN NOT MATCHED THEN
+    INSERT (nombre, genero, cedula)
+    VALUES (src.nombreGuia, src.genero, src.cedula);
 
-  -- Insertar ciudades
-  INSERT INTO Ciudad (nombreCiudad, nombrePais)
-  SELECT DISTINCT t.nombreCiudad, t.nombrePais
-  FROM TempCarga t
-  WHERE NOT EXISTS (SELECT 1 FROM Ciudad c WHERE c.nombreCiudad = t.nombreCiudad);
+  /* ----------------------------
+     DIMENSION: Ciudad (único por nombreCiudad)
+     ---------------------------- */
+  MERGE INTO Ciudad c
+  USING (
+    SELECT nombreCiudad,
+           MIN(nombrePais) AS nombrePais
+    FROM TempCarga
+    GROUP BY nombreCiudad
+  ) src
+  ON (c.nombreCiudad = src.nombreCiudad)
+  WHEN NOT MATCHED THEN
+    INSERT (nombreCiudad, nombrePais)
+    VALUES (src.nombreCiudad, src.nombrePais);
 
-  -- Insertar tiempos
-  INSERT INTO Tiempo (fecha, dia, mes, anio)
-  SELECT DISTINCT t.fecha,
-         EXTRACT(DAY FROM t.fecha),
-         EXTRACT(MONTH FROM t.fecha),
-         EXTRACT(YEAR FROM t.fecha)
-  FROM TempCarga t
-  WHERE NOT EXISTS (SELECT 1 FROM Tiempo ti WHERE ti.fecha = t.fecha);
+  /* ----------------------------
+     DIMENSION: Tiempo (único por fecha)
+     ---------------------------- */
+  MERGE INTO Tiempo ti
+  USING (
+    SELECT TRUNC(fecha) AS fecha,
+           MIN(EXTRACT(DAY FROM fecha))   AS dia,
+           MIN(EXTRACT(MONTH FROM fecha)) AS mes,
+           MIN(EXTRACT(YEAR FROM fecha))  AS anio
+    FROM TempCarga
+    GROUP BY TRUNC(fecha)
+  ) src
+  ON (TRUNC(ti.fecha) = src.fecha)
+  WHEN NOT MATCHED THEN
+    INSERT (fecha, dia, mes, anio)
+    VALUES (src.fecha, src.dia, src.mes, src.anio);
 
-  -- Insertar hechos
-  INSERT INTO HechosGuiaCiudad (idGuia, idCiudad, idTiempo, valorDia)
-  SELECT g.idGuia, c.idCiudad, ti.idTiempo, t.valorDia
-  FROM TempCarga t
-  JOIN Guia g ON g.cedula = t.cedula
-  JOIN Ciudad c ON c.nombreCiudad = t.nombreCiudad
-  JOIN Tiempo ti ON ti.fecha = t.fecha;
+  /* ----------------------------
+     HECHOS: una fila por combinación idGuia,idCiudad,idTiempo
+     (si hay varias filas en TempCarga para la misma combinación
+      guardamos el MAX(valorDia) — puedes cambiar por SUM/AVG/...)
+     ---------------------------- */
+  MERGE INTO HechosGuiaCiudad h
+  USING (
+    SELECT g.idGuia,
+           c.idCiudad,
+           ti.idTiempo,
+           MAX(t.valorDia) AS valorDia
+    FROM TempCarga t
+    JOIN Guia  g ON g.cedula = t.cedula
+    JOIN Ciudad c ON c.nombreCiudad = t.nombreCiudad
+    JOIN Tiempo ti ON TRUNC(ti.fecha) = TRUNC(t.fecha)
+    GROUP BY g.idGuia, c.idCiudad, ti.idTiempo
+  ) src
+  ON (h.idGuia = src.idGuia AND h.idCiudad = src.idCiudad AND h.idTiempo = src.idTiempo)
+  WHEN NOT MATCHED THEN
+    INSERT (idGuia, idCiudad, idTiempo, valorDia)
+    VALUES (src.idGuia, src.idCiudad, src.idTiempo, src.valorDia)
+  WHEN MATCHED THEN
+    UPDATE SET h.valorDia = src.valorDia;  -- opcional: actualiza si ya existe
+
+  COMMIT;
 END SP_CARGARDATOSTURISTICOS;
