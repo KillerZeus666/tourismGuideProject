@@ -33,6 +33,35 @@ Las reglas principales del modelo son:
 
 ---
 
+## 🗂️ Estructura del proyecto
+tourismGuideProject/
+├─ LICENSE
+├─ README.md
+├─ data/
+│  └─ raw/
+│     └─ tempcarga.csv
+├─ docs/
+│  ├─ entregas/
+│  │  └─ ABD_2025_30_Entrega_I_i.docx
+│  └─ modelado/
+│     └─ disenio.jpg
+├─ loader/
+│  ├─ control/
+│  │  └─ tempcarga.ctl
+│  ├─ logs/
+│  │  └─ ComandoCMDejecloader.txt
+├─ sql/
+│  ├─ ddl/
+│  │  └─ scriptSQL/
+│  ├─ etl/
+│  │  ├─ procesoCargarDatosTablasSQL/
+│  │  └─ procesoGenerarDatosSQL/
+│  └─ staging/
+│     └─ tempCargaSQL/
+
+
+---
+
 ## 🚀 Actividades realizadas
 
 1. **Modelo denormalizado para OLAP**  
@@ -49,6 +78,15 @@ Las reglas principales del modelo son:
    - Uso de Oracle SQL*Loader para cargar datos en la tabla temporal a partir de archivos `.ctl` y `.dat`.  
 
 ---
+
+## ⚙️ Flujo de carga (ETL)
+1. DDL → Crear tablas y restricciones (sql/ddl/scriptSQL/).
+2. Staging → Crear tabla temporal (sql/staging/tempCargaSQL/).
+3. Carga staging → Usar data/raw/tempcarga.csv con loader/control/tempcarga.ctl y el comando en loader/logs/ComandoCMDejecloader.txt.
+4. ETL → Ejecutar:
+   - sql/etl/procesoGenerarDatosSQL/ → generación de datos de prueba.
+   - sql/etl/procesoCargarDatosTablasSQL/ → carga en dimensiones y hechos.
+
 
 ## 👥 Integrantes
 

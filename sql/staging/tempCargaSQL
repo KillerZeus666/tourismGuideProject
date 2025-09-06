@@ -5,5 +5,5 @@ CREATE TABLE TempCarga (
     nombreCiudad VARCHAR(100),
     nombrePais   VARCHAR(100),
     fecha        DATE,
-    valorDia     INT
+    valorDia int
 );
