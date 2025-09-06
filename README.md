@@ -29,11 +29,12 @@ Las reglas principales del modelo son:
 
 ### Diagrama del diseño
 
-![Diseño del problema](./disenio.jpg)
+![Diseño del problema](docs/modelado/disenio.jpg)
 
 ---
 
 ## 🗂️ Estructura del proyecto
+```text
 tourismGuideProject/
 ├─ LICENSE
 ├─ README.md
@@ -59,6 +60,7 @@ tourismGuideProject/
 │  └─ staging/
 │     └─ tempCargaSQL/
 
+```
 
 ---
 
