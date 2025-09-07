@@ -1,0 +1,13 @@
+-- Poblar 365 días de 2025: NO incluir IDTIEMPO (lo genera Oracle).
+INSERT INTO TIEMPO (FECHA)
+SELECT DATE '2025-01-01' + (LEVEL - 1)
+FROM dual
+CONNECT BY LEVEL <= 365;
+
+COMMIT;
+
+-- Verificación
+SELECT COUNT(*) AS CNT_TIEMPO,
+       MIN(IDTIEMPO) AS MIN_ID,
+       MAX(IDTIEMPO) AS MAX_ID
+FROM TIEMPO;
