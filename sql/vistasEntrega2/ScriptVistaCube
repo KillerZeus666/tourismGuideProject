@@ -1,0 +1,15 @@
+CREATE OR REPLACE VIEW V_CONSULTA_CUBE AS
+SELECT 
+    g.nombre         AS nombreGuia,
+    c.nombrePais     AS pais,
+    c.nombreCiudad   AS ciudad,
+    t.anio,
+    t.mes,
+    SUM(h.valorDia)  AS totalPago
+FROM HechosGuiaCiudad h
+JOIN Guia g    ON g.idGuia = h.idGuia
+JOIN Ciudad c  ON c.idCiudad = h.idCiudad
+JOIN Tiempo t  ON t.idTiempo = h.idTiempo
+WHERE t.anio BETWEEN 2020 AND 2025   -- Ejemplo de filtro
+GROUP BY CUBE(c.nombrePais, c.nombreCiudad, t.anio, t.mes, g.nombre)
+ORDER BY t.anio DESC, t.mes DESC, g.nombre;
