@@ -1,0 +1,24 @@
+CREATE VIEW V_WINDOMING AS
+SELECT
+    h.idGuia,
+    g.nombre AS nombreGuia,
+    h.idCiudad,
+    c.nombreCiudad,
+    t.fecha,
+    h.valorDia,
+    -- suma en una ventana de 7 días (3 atrás, actual, 3 adelante)
+    SUM(h.valorDia) OVER (
+        PARTITION BY h.idGuia, h.idCiudad
+        ORDER BY t.fecha
+        ROWS BETWEEN 3 PRECEDING AND 3 FOLLOWING
+    ) AS suma_ventana_7dias,
+    -- promedio en esa misma ventana
+    AVG(h.valorDia) OVER (
+        PARTITION BY h.idGuia, h.idCiudad
+        ORDER BY t.fecha
+        ROWS BETWEEN 3 PRECEDING AND 3 FOLLOWING
+    ) AS promedio_ventana_7dias
+FROM HechosGuiaCiudad h
+JOIN Guia g ON g.idGuia = h.idGuia
+JOIN Ciudad c ON c.idCiudad = h.idCiudad
+JOIN Tiempo t ON t.idTiempo = h.idTiempo;
