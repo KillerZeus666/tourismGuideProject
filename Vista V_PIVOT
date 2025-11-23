@@ -1,0 +1,31 @@
+CREATE VIEW V_PIVOT AS
+SELECT *
+FROM (
+    SELECT
+        g.nombre AS nombreGuia,
+        c.nombreCiudad,
+        t.mes,
+        h.valorDia
+    FROM HechosGuiaCiudad h
+    JOIN Guia   g ON g.idGuia  = h.idGuia
+    JOIN Ciudad c ON c.idCiudad = h.idCiudad
+    JOIN Tiempo t ON t.idTiempo = h.idTiempo
+)
+PIVOT (
+    SUM(valorDia)
+    FOR mes IN (
+        '01' AS MES_01,
+        '02' AS MES_02,
+        '03' AS MES_03,
+        '04' AS MES_04,
+        '05' AS MES_05,
+        '06' AS MES_06,
+        '07' AS MES_07,
+        '08' AS MES_08,
+        '09' AS MES_09,
+        '10' AS MES_10,
+        '11' AS MES_11,
+        '12' AS MES_12
+    )
+) 
+ORDER BY nombreGuia, nombreCiudad;
