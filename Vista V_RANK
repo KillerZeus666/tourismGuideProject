@@ -1,0 +1,22 @@
+CREATE VIEW V_RANK AS
+SELECT
+    c.idCiudad,
+    c.nombreCiudad,
+    g.idGuia,
+    g.nombre AS nombreGuia,
+    t.total_valor,
+    RANK() OVER (
+        PARTITION BY t.idCiudad
+        ORDER BY t.total_valor DESC
+    ) AS rank_guia_ciudad
+FROM (
+    -- total por guía y ciudad
+    SELECT
+        h.idCiudad,
+        h.idGuia,
+        SUM(h.valorDia) AS total_valor
+    FROM HechosGuiaCiudad h
+    GROUP BY h.idCiudad, h.idGuia
+) t
+JOIN Ciudad c ON c.idCiudad = t.idCiudad
+JOIN Guia g ON g.idGuia = t.idGuia;
